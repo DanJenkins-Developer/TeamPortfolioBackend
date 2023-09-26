@@ -1,12 +1,13 @@
 from sqlalchemy.schema import Column
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.types import String, Integer, Text
 from database import Base
-class Movie(Base):
-    __tablename__ = "Movie"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(20), unique=True)
-    desc = Column(Text())
-    type = Column(String(20))
-    url = Column(String(100))
-    rating = Column(Integer)
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    email = Column(String, unique=True, index=True)
+    picture_path = Column(String)
+    hashed_password = Column(String)
 
