@@ -3,6 +3,19 @@ from typing import Union, Annotated
 from fastapi import FastAPI, Query
 from pydantic import BaseModel
 
+import schema
+from database import SessionLocal, engine
+import models
+
+models.Base.metadata.create_all(bind=engine)
+
+def get_database_session():
+    try:
+        db = SessionLocal()
+        yield db
+    finally:
+        db.close()
+
 from fastapi.middleware.cors import CORSMiddleware
 
 class Item(BaseModel):
