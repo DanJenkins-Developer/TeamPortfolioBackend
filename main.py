@@ -6,10 +6,9 @@ from sqlalchemy.orm import Session
 import crud, models, schemas
 from database import SessionLocal, engine
 
-print("Hello world 1")
 models.Base.metadata.create_all(bind=engine)
 
-print("Hello world")
+print("Success")
 app = FastAPI()
 
 
