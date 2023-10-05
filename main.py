@@ -8,6 +8,8 @@ from passlib.context import CryptContext
 
 from fastapi.middleware.cors import CORSMiddleware
 
+from middleware import authentication
+
 SECRET_KEY = "274ae11418dc7fa5770a6cfc1ac07b1cfe13cad08b91de0f01aaf65d6a88f814"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -68,11 +70,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+# def verify_password(plain_password, hashed_password):
+#     return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+# def get_password_hash(password):
+#     return pwd_context.hash(password)
 
 def get_user(db, username: str):
     if username in db:
@@ -83,22 +85,22 @@ def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not authentication.verify_password(password, user.hashed_password):
         return False
     
     return user
 
-def create_access_token(data: dict, expires_delta: timedelta or None = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow + timedelta(minutes=15)
+# def create_access_token(data: dict, expires_delta: timedelta or None = None):
+#     to_encode = data.copy()
+#     if expires_delta:
+#         expire = datetime.utcnow() + expires_delta
+#     else:
+#         expire = datetime.utcnow + timedelta(minutes=15)
 
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+#     to_encode.update({"exp": expire})
+#     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-    return encoded_jwt
+#     return encoded_jwt
 
 async def get_current_user(token: str = Depends(oauth_2_scheme)):
     credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
@@ -134,7 +136,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
 
     access_token_expires = timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    access_token = authentication.create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me", response_model=User)
