@@ -46,6 +46,10 @@ class User(BaseModel):
     full_name: str or None = None
     disabled: bool or None = None
 
+class AuthenticatedUser(User):
+    hashed_password: str
+    access_token: str or None = None
+
 class UserInDB(User):
     hashed_password: str
 
@@ -79,7 +83,8 @@ app.add_middleware(
 def get_user(db, username: str):
     if username in db:
         user_data = db[username]
-        return UserInDB(**user_data)
+        #return UserInDB(**user_data)
+        return AuthenticatedUser(**user_data)
     
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
@@ -87,6 +92,9 @@ def authenticate_user(db, username: str, password: str):
         return False
     if not authentication.verify_password(password, user.hashed_password):
         return False
+    
+    access_token_expires = timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINUTES)
+    user.access_token = authentication.create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
     
     return user
 
@@ -135,9 +143,10 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
 
-    access_token_expires = timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = authentication.create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer"}
+    # access_token_expires = timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINUTES)
+    # access_token = authentication.create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    
+    return {"access_token": user.access_token, "token_type": "bearer"}
 
 @app.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
@@ -146,6 +155,7 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 @app.get("/users/items")
 async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": 1, "owner":current_user}]
+
 
 
 
