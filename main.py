@@ -10,28 +10,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from middleware import authentication
 
-# SECRET_KEY = "274ae11418dc7fa5770a6cfc1ac07b1cfe13cad08b91de0f01aaf65d6a88f814"
-# ALGORITHM = "HS256"
-# ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from Database import database
 
 
-#Testing
-#from . import crud, models, schemas
-# import crud, models, schemas
-# from database import SessionLocal, engine
 
-# models.Base.metadata.create_all(bind=engine)
-
-
-db = {
-    "tim": {
-        "username": "tim",
-        "full_name": "Tim Ruscica",
-        "email": "time@gmail.com",
-        "hashed_password": "$2b$12$9g6sxsPCIEhMlUpnzn0fhOvsdlUO7qaMOz5HZqCG53zSMSDWYJO1S",
-        "disabled": False
-    }
-}
+# db = {
+#     "tim": {
+#         "username": "tim",
+#         "full_name": "Tim Ruscica",
+#         "email": "time@gmail.com",
+#         "hashed_password": "$2b$12$9g6sxsPCIEhMlUpnzn0fhOvsdlUO7qaMOz5HZqCG53zSMSDWYJO1S",
+#         "disabled": False
+#     }
+# }
 
 # class Token(BaseModel):
 #     access_token: str
@@ -141,7 +132,7 @@ app.add_middleware(
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     print("Testing ::" + form_data.username)
     print("Testing ::" + form_data.password)
-    user = authentication.authenticate_user(db, form_data.username, form_data.password)
+    user = authentication.authenticate_user(database.db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
 
