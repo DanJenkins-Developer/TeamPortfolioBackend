@@ -8,7 +8,7 @@ from middleware import authentication
 
 from Database import database
 
-from Models import models
+from Schemas import schemas
 
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/token", response_model=models.Token)
+@app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     # print("Testing ::" + form_data.username)
     # print("Testing ::" + form_data.password)
@@ -41,12 +41,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     
     return {"access_token": user.access_token, "token_type": "bearer"}
 
-@app.get("/users/me", response_model=models.User)
-async def read_users_me(current_user: models.User = Depends(authentication.get_current_active_user)):
+@app.get("/users/me", response_model=schemas.User)
+async def read_users_me(current_user: schemas.User = Depends(authentication.get_current_active_user)):
     return current_user
 
 @app.get("/users/items")
-async def read_own_items(current_user: models.User = Depends(authentication.get_current_active_user)):
+async def read_own_items(current_user: schemas.User = Depends(authentication.get_current_active_user)):
     return [{"item_id": 1, "owner":current_user}]
 
 

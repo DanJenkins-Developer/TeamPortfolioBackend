@@ -3,7 +3,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 
-from Models import models
+from Schemas import schemas
 
 from Database import database
 
@@ -26,7 +26,7 @@ def get_user(db, username: str):
     if username in db:
         user_data = db[username]
         #return UserInDB(**user_data)
-        return models.AuthenticatedUser(**user_data)
+        return schemas.AuthenticatedUser(**user_data)
     
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
@@ -61,7 +61,7 @@ async def get_current_user(token: str = Depends(oauth_2_scheme)):
         if username is None:
             raise credential_exception
         
-        token_data = models.TokenData(username=username)
+        token_data = schemas.TokenData(username=username)
     except JWTError:
         raise credential_exception
     
@@ -71,7 +71,7 @@ async def get_current_user(token: str = Depends(oauth_2_scheme)):
     
     return user
 
-async def get_current_active_user(current_user: models.UserInDB = Depends(get_current_user)):
+async def get_current_active_user(current_user: schemas.UserInDB = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     
