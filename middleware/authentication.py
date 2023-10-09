@@ -28,8 +28,8 @@ def get_user(db, username: str):
         #return UserInDB(**user_data)
         return schemas.AuthenticatedUser(**user_data)
     
-def authenticate_user(db, username: str, password: str):
-    user = get_user(db, username)
+def authenticate_user(username: str, password: str):
+    user = get_user(database.db, username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
