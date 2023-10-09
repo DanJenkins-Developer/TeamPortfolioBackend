@@ -41,6 +41,22 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     
     return {"access_token": user.access_token, "token_type": "bearer"}
 
+@app.post("/login", response_model=schemas.Token)
+async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
+
+    user = authentication.userInDB(database.db, form_data.username)
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+
+    if not authentication.verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+
+    access_token = authentication.create_access_token(data={"sub": user.username})
+
+    #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
+    return {"access_token": access_token, "token_type": "bearer"}
+
 @app.get("/users/me", response_model=schemas.User)
 async def read_users_me(current_user: schemas.User = Depends(authentication.get_current_active_user)):
     return current_user
