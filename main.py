@@ -12,6 +12,13 @@ from Schemas import schemas
 
 from typing import Annotated
 
+import crud
+
+from database import SessionLocal, engine
+
+from sqlalchemy.orm import Session
+
+
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -33,25 +40,52 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 @app.post("/register", response_model=schemas.NewUser)
 async def register(
     first_name: Annotated[str, Form()],
     last_name: Annotated[str, Form()],
     phone_number: Annotated[str, Form()],
     photo: Annotated[UploadFile, File()],
-    email: Annotated[str, Form()]
+    email: Annotated[str, Form()],
+    password: Annotated[str, Form()],
+
+    db: Session = Depends(get_db)
 ):
-    return {
-        # "file_size": photo.content_type,
-        # "email": email
-        # #print("Hello")
+    #db_user = crud.get_user_by_email(db, email=email)
+
+    # if db_user:
+    #     raise HTTPException(status_code=400, detail="Email already registered")
+    
+    photo_name = photo.filename
+    user_data = {
         "first_name": first_name,
         "last_name": last_name,
         "phone_number": phone_number,
-        "photo_name": photo.filename,
-        "email": email
+        "photo_name": photo_name,
+        "email": email,
+        "password":password,
+        "disabled": 0
     }
+    #return crud.create_user(db=db, user=user_data)
+    # return {
+    #     # "file_size": photo.content_type,
+    #     # "email": email
+    #     # #print("Hello")
+    #     # "first_name": first_name,
+    #     # "last_name": last_name,
+    #     # "phone_number": phone_number,
+    #     # "photo_name": photo.filename,
+    #     # "email": email
+    # }
 
+    return user_data
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):

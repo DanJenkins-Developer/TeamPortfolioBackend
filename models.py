@@ -2,15 +2,20 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 #rom .database import Base
-from database import Base
+#from database import Base
 
-class User(Base):
+from Database import database
+
+class User(database.Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String(255))
+    last_name = Column(String(255))
+    phone_number = Column(String(255))
     email = Column(String(255), unique=True, index=True)
     hashed_password = Column(String(255))
-    picture_path = Column(String(255))
+    #picture_path = Column(String(255))
 
 
 

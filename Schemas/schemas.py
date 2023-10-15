@@ -17,9 +17,11 @@ class NewUser(BaseModel):
     first_name: str
     last_name: str
     phone_number: str
-    photo_name: str
+    photo_name: str or None = None
     email: str 
+    password: str
     disabled: bool or None = None
+
 
 class AuthenticatedUser(User):
     hashed_password: str
