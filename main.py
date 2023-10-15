@@ -33,7 +33,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/register")
+@app.post("/register", response_model=schemas.NewUser)
 async def register(
     first_name: Annotated[str, Form()],
     last_name: Annotated[str, Form()],
@@ -42,9 +42,14 @@ async def register(
     email: Annotated[str, Form()]
 ):
     return {
-        "file_size": photo.content_type,
+        # "file_size": photo.content_type,
+        # "email": email
+        # #print("Hello")
+        "first_name": first_name,
+        "last_name": last_name,
+        "phone_number": phone_number,
+        "photo_name": photo.filename,
         "email": email
-        #print("Hello")
     }
 
 
