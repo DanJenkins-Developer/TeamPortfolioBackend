@@ -19,6 +19,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.NewUser):
+
+    print(user)
     # Set up variables to pass to the model
     fake_hashed_password = user.password + "notreallyhashed"
     #create user model

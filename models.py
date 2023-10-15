@@ -9,7 +9,7 @@ from Database import database
 class User(database.Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     first_name = Column(String(255))
     last_name = Column(String(255))
     phone_number = Column(String(255))

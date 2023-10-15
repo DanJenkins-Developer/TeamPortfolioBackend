@@ -47,7 +47,7 @@ def get_db():
     finally:
         db.close()
 
-@app.post("/register", response_model=schemas.NewUser)
+@app.post("/register")
 async def register(
     first_name: Annotated[str, Form()],
     last_name: Annotated[str, Form()],
@@ -58,22 +58,30 @@ async def register(
 
     db: Session = Depends(get_db)
 ):
-    #db_user = crud.get_user_by_email(db, email=email)
+    db_user = crud.get_user_by_email(db, email=email)
 
-    # if db_user:
-    #     raise HTTPException(status_code=400, detail="Email already registered")
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
     
     photo_name = photo.filename
-    user_data = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "phone_number": phone_number,
-        "photo_name": photo_name,
-        "email": email,
-        "password":password,
-        "disabled": 0
-    }
-    #return crud.create_user(db=db, user=user_data)
+
+    user = schemas.NewUser(
+        first_name=first_name,
+        last_name=last_name,
+        phone_number=phone_number,
+        email=email,
+        password = password
+    )
+    # user_data = {
+    #     "first_name": first_name,
+    #     "last_name": last_name,
+    #     "phone_number": phone_number,
+    #     "photo_name": photo_name,
+    #     "email": email,
+    #     "password":password,
+    #     "disabled": 0
+    # }
+    return crud.create_user(db=db, user=user)
     # return {
     #     # "file_size": photo.content_type,
     #     # "email": email
@@ -85,7 +93,7 @@ async def register(
     #     # "email": email
     # }
 
-    return user_data
+    #return user_data
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
