@@ -112,20 +112,6 @@ async def read_users_me(current_user: schemas.User = Depends(authentication.get_
 async def read_own_items(current_user: schemas.User = Depends(authentication.get_current_active_user)):
     return [{"item_id": 1, "owner":current_user}]
 
-
-
-
-# pwd = get_password_hash("dan1234")
-# print(pwd)
-# Dependency
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-
 # @app.post("/users/", response_model=schemas.User)
 # def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 #     db_user = crud.get_user_by_email(db, email=user.email)
