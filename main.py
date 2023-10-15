@@ -93,16 +93,9 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Sessi
 
     db_user = crud.get_user_by_email(db, email=form_data.username)
 
-    print("\n\n\n")
-    print("DB USER PASSWORD :: ")
-    print(db_user.hashed_password)
-    print("\n\n\n")
-
-    # if not user:
-    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
     if not db_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
-
+    
     if not authentication.verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
 

@@ -27,10 +27,6 @@ def create_user(db: Session, user: schemas.CreateUser):
     #fake_hashed_password = user.password + "notreallyhashed"
     hashed_password = authentication.get_password_hash(user.password)
 
-    print("\n\n\n")
-    print("USER PASSWORD :: ")
-    print(hashed_password)
-    print("\n\n\n")
     #create user model
     #db_user = models.User(email=user.email, hashed_password=fake_hashed_password, picture_path = user.picture_path)
     db_user = models.User(
