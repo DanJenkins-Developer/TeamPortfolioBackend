@@ -29,9 +29,13 @@ def get_user(db, username: str):
         return schemas.AuthenticatedUser(**user_data)
     
 
-def userInDB(db, username:str):
-    if username in db:
-        user_data = db[username]
+# def userInDB(db, username:str):
+#     if username in db:
+#         user_data = db[username]
+#         return schemas.UserInDB(**user_data)
+def userInDB(db, email:str):
+    if email in db:
+        user_data = db[email]
         return schemas.UserInDB(**user_data)
     
 

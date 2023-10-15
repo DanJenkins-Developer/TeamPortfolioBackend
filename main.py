@@ -87,17 +87,26 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": user.access_token, "token_type": "bearer"}
 
 @app.post("/login", response_model=schemas.Token)
-async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
 
-    user = authentication.userInDB(database.db, form_data.username)
+    #user = authentication.userInDB(database.db, form_data.username)
 
-    if not user:
+    db_user = crud.get_user_by_email(db, email=form_data.username)
+
+    print("\n\n\n")
+    print("DB USER PASSWORD :: ")
+    print(db_user.hashed_password)
+    print("\n\n\n")
+
+    # if not user:
+    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+    if not db_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
 
-    if not authentication.verify_password(form_data.password, user.hashed_password):
+    if not authentication.verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
 
-    access_token = authentication.create_access_token(data={"sub": user.username})
+    access_token = authentication.create_access_token(data={"sub": db_user.email})
 
     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
     return {"access_token": access_token, "token_type": "bearer"}
