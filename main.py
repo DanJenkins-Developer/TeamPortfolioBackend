@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 
@@ -9,6 +9,8 @@ from middleware import authentication
 from Database import database
 
 from Schemas import schemas
+
+from typing import Annotated
 
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -30,6 +32,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.post("/register")
+async def register(
+    first_name: Annotated[str, Form()],
+    last_name: Annotated[str, Form()],
+    phone_number: Annotated[str, Form()],
+    photo: Annotated[UploadFile, File()],
+    email: Annotated[str, Form()]
+):
+    return {
+        "file_size": photo.content_type,
+        "email": email
+        #print("Hello")
+    }
+
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
