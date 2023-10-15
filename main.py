@@ -72,28 +72,8 @@ async def register(
         email=email,
         password = password
     )
-    # user_data = {
-    #     "first_name": first_name,
-    #     "last_name": last_name,
-    #     "phone_number": phone_number,
-    #     "photo_name": photo_name,
-    #     "email": email,
-    #     "password":password,
-    #     "disabled": 0
-    # }
+    
     return crud.create_user(db=db, user=user)
-    # return {
-    #     # "file_size": photo.content_type,
-    #     # "email": email
-    #     # #print("Hello")
-    #     # "first_name": first_name,
-    #     # "last_name": last_name,
-    #     # "phone_number": phone_number,
-    #     # "photo_name": photo.filename,
-    #     # "email": email
-    # }
-
-    #return user_data
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
