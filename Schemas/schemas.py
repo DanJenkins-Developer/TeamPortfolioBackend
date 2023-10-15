@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from fastapi import File
+from typing import Optional
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -7,20 +8,21 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str or None = None
 
-class User(BaseModel):
-    username: str
-    email: str or None = None
-    full_name: str or None = None
-    disabled: bool or None = None
+# class User(BaseModel):
+#     username: str
+#     email: str or None = None
+#     full_name: str or None = None
+#     disabled: bool or None = None
 
-class NewUser(BaseModel):
+class User(BaseModel):
+    email: str 
+
+class CreateUser(User):
     first_name: str
     last_name: str
     phone_number: str
-    photo_name: str or None = None
-    email: str 
+    profile_picture_id: str or None = None
     password: str
-    disabled: bool or None = None
 
 
 class AuthenticatedUser(User):
@@ -29,3 +31,6 @@ class AuthenticatedUser(User):
 
 class UserInDB(User):
     hashed_password: str
+
+    class Config:
+        from_attributes = True

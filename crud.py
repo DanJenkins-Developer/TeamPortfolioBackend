@@ -18,7 +18,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: schemas.NewUser):
+def create_user(db: Session, user: schemas.CreateUser):
 
     print(user)
     # Set up variables to pass to the model

@@ -52,10 +52,9 @@ async def register(
     first_name: Annotated[str, Form()],
     last_name: Annotated[str, Form()],
     phone_number: Annotated[str, Form()],
-    photo: Annotated[UploadFile, File()],
     email: Annotated[str, Form()],
     password: Annotated[str, Form()],
-
+    photo: Annotated[UploadFile, File()],
     db: Session = Depends(get_db)
 ):
     db_user = crud.get_user_by_email(db, email=email)
@@ -64,15 +63,17 @@ async def register(
         raise HTTPException(status_code=400, detail="Email already registered")
     
     photo_name = photo.filename
+    profile_picture_id = photo_name
 
-    user = schemas.NewUser(
+    user = schemas.CreateUser(
+        email=email,
         first_name=first_name,
         last_name=last_name,
         phone_number=phone_number,
-        email=email,
-        password = password
+        profile_picture_id=profile_picture_id,
+        password=password
     )
-    
+
     return crud.create_user(db=db, user=user)
 
 @app.post("/token", response_model=schemas.Token)
