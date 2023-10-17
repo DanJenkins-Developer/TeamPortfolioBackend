@@ -1,4 +1,5 @@
 # uvicorn main:app --reload
+# python3 -m http.server 8080
 
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
