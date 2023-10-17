@@ -3,7 +3,7 @@
 
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from passlib.context import CryptContext
+#from passlib.context import CryptContext
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,7 +17,7 @@ from typing import Annotated
 
 import crud
 
-from database import SessionLocal, engine
+from database import SessionLocal
 
 from sqlalchemy.orm import Session
 
