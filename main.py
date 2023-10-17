@@ -82,7 +82,13 @@ async def register(
     )
 
     # Create user
-    return crud.create_user(db=db, user=user)
+    db_user = crud.create_user(db=db, user=user)
+
+    access_token = authentication.create_access_token(data={"sub": db_user.email})
+
+    #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
+    return {"access_token": access_token, "token_type": "bearer"}
+    #return crud.create_user(db=db, user=user)
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
