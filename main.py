@@ -1,3 +1,5 @@
+# uvicorn main:app --reload
+
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
@@ -6,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from middleware import authentication
 
-from Database import database
+#from Database import database
 
 from Schemas import schemas
 
@@ -57,14 +59,18 @@ async def register(
     photo: Annotated[UploadFile, File()],
     db: Session = Depends(get_db)
 ):
+    # check if user exists
     db_user = crud.get_user_by_email(db, email=email)
 
+    # if so throw an error
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    # Collect file name from photo file (temp)
     photo_name = photo.filename
     profile_picture_id = photo_name
 
+    # Construct user schema to pass to crud function
     user = schemas.CreateUser(
         email=email,
         first_name=first_name,
@@ -74,6 +80,7 @@ async def register(
         password=password
     )
 
+    # Create user
     return crud.create_user(db=db, user=user)
 
 @app.post("/token", response_model=schemas.Token)
