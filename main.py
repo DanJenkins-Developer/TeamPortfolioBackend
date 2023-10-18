@@ -2,27 +2,25 @@
 # python3 -m http.server 8080
 
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Form
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
+from db_utils import get_db
+from sqlalchemy.orm import Session
+from authenticate import authorize
+from typing import Annotated
+import crud, models, schemas, middleware
+#from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 #from passlib.context import CryptContext
 
-from fastapi.middleware.cors import CORSMiddleware
 
-import middleware
+#import middleware
 
 #from Database import database
-from db_utils import get_db
 
-import schemas
+#import schemas
 
-from typing import Annotated
-
-import crud, models
 
 # from database import SessionLocal
 
-from sqlalchemy.orm import Session
-
-from authenticate import authorize
 
 
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
