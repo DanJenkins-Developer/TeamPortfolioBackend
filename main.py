@@ -7,7 +7,7 @@ from db_utils import get_db
 from sqlalchemy.orm import Session
 from authorization import authorize
 from typing import Annotated
-import crud, models, schemas, middleware
+import crud, models, schemas, middleware, authentication
 #from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 #from passlib.context import CryptContext
 
@@ -99,23 +99,40 @@ async def register(
     
 #     return {"access_token": user.access_token, "token_type": "bearer"}
 
-@app.post("/login", response_model=schemas.Token)
+# @app.post("/login", response_model=schemas.Token)
+# async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
+
+#     #user = middleware.userInDB(database.db, form_data.username)
+
+#     db_user = crud.get_user_by_email(db, email=form_data.email)
+
+#     if not db_user:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
+    
+#     if not middleware.verify_password(form_data.password, db_user.hashed_password):
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
+
+#     access_token = middleware.create_access_token(data={"sub": db_user.email})
+
+#     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
+#     return {"access_token": access_token, "token_type": "bearer"}
+
+@app.post("/login", response_model=schemas.AuthenticatedUser)
 async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
 
     #user = middleware.userInDB(database.db, form_data.username)
+    email = form_data.email
+    password = form_data.password
 
-    db_user = crud.get_user_by_email(db, email=form_data.email)
+    #db_user = crud.get_user_by_email(db, email=form_data.email)
 
-    if not db_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
-    
-    if not middleware.verify_password(form_data.password, db_user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
+    auth_user = authentication.authenticate_user(email, password, db)
 
-    access_token = middleware.create_access_token(data={"sub": db_user.email})
+    #access_token = middleware.create_access_token(data={"sub": db_user.email})
 
     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
-    return {"access_token": access_token, "token_type": "bearer"}
+    #return {"access_token": access_token, "token_type": "bearer"}
+    return auth_user
 
 @app.get("/users/me", response_model=schemas.UserInDB)
 async def read_users_me(current_user: models.User = Depends(authorize)):

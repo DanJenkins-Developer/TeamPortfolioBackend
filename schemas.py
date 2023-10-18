@@ -31,7 +31,7 @@ class CreateUser(User):
 
 
 class AuthenticatedUser(User):
-    hashed_password: str
+    #hashed_password: str
     access_token: str or None = None
 
 class UserInDB(User):

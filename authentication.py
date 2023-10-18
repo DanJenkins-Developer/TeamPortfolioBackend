@@ -7,6 +7,7 @@ from crud import get_user_by_email
 import schemas
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
+from fastapi import Depends, FastAPI, HTTPException, status
 
 from dotenv import load_dotenv
 import os
@@ -14,9 +15,13 @@ load_dotenv()
 
 #DATABASE_URL = os.getenv("SECRET_KEY")
 
-SECRET_KEY = os.getenv("SECRET_KEY")
-ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+# SECRET_KEY = os.getenv("SECRET_KEY")
+# ALGORITHM = os.getenv("ALGORITHM")
+# ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+
+SECRET_KEY = "274ae11418dc7fa5770a6cfc1ac07b1cfe13cad08b91de0f01aaf65d6a88f814"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 
@@ -36,9 +41,19 @@ def authenticate_user(email: str, password: str, db: Session = Depends(get_db)):
     #user = get_user(db, email)
     user = get_user_by_email(db, email)
     if not user:
-        return False
+        #return False
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
     if not verify_password(password, user.hashed_password):
-        return False
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
+        #return False
+
+    access_token = create_access_token(data={"sub": user.email})
+    
+    return schemas.AuthenticatedUser(email=user.email, 
+                                     access_token=access_token)
+
+
+    #return user
     
 def create_access_token(data: dict):
 
