@@ -37,10 +37,10 @@ def get_user(db, email: str):
 #     if email in db:
 #         user_data = db[email]
 #         return schemas.UserInDB(**user_data)
-def userInDB(db, email:str):
-    if email in db:
-        user_data = db[email]
-        return schemas.UserInDB(**user_data)
+# def userInDB(db, email:str):
+#     if email in db:
+#         user_data = db[email]
+#         return schemas.UserInDB(**user_data)
     
 
     
