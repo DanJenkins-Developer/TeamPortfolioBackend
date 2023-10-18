@@ -1,12 +1,17 @@
 from pydantic import BaseModel
 from fastapi import File
 from typing import Optional
+
+class EmailPasswordRequestForm(BaseModel):
+    email: str
+    password: str
+
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 class TokenData(BaseModel):
-    username: str or None = None
+    email: str or None = None
 
 # class User(BaseModel):
 #     username: str
@@ -30,7 +35,10 @@ class AuthenticatedUser(User):
     access_token: str or None = None
 
 class UserInDB(User):
-    hashed_password: str
+    first_name: str
+    last_name: str
+    phone_number: str
+    profile_picture_id: str or None = None
 
     class Config:
         from_attributes = True

@@ -10,16 +10,19 @@ from fastapi.middleware.cors import CORSMiddleware
 import middleware
 
 #from Database import database
+from db_utils import get_db
 
 import schemas
 
 from typing import Annotated
 
-import crud
+import crud, models
 
-from database import SessionLocal
+# from database import SessionLocal
 
 from sqlalchemy.orm import Session
+
+from authenticate import authorize
 
 
 # pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -43,12 +46,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 @app.post("/register")
 async def register(
@@ -101,25 +104,25 @@ async def register(
 #     return {"access_token": user.access_token, "token_type": "bearer"}
 
 @app.post("/login", response_model=schemas.Token)
-async def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
+async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
 
     #user = middleware.userInDB(database.db, form_data.username)
 
-    db_user = crud.get_user_by_email(db, email=form_data.username)
+    db_user = crud.get_user_by_email(db, email=form_data.email)
 
     if not db_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
     
     if not middleware.verify_password(form_data.password, db_user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
 
     access_token = middleware.create_access_token(data={"sub": db_user.email})
 
     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/users/me", response_model=schemas.User)
-async def read_users_me(current_user: schemas.User = Depends(middleware.get_current_active_user)):
+@app.get("/users/me", response_model=schemas.UserInDB)
+async def read_users_me(current_user: models.User = Depends(authorize)):
     return current_user
 
 # @app.get("/users/items")
