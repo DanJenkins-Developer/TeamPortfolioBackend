@@ -5,7 +5,7 @@ from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, F
 from fastapi.middleware.cors import CORSMiddleware
 from db_utils import get_db
 from sqlalchemy.orm import Session
-from authenticate import authorize
+from authorization import authorize
 from typing import Annotated
 import crud, models, schemas, middleware
 #from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
