@@ -7,11 +7,11 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from fastapi.middleware.cors import CORSMiddleware
 
-from middleware import authentication
+import middleware
 
 #from Database import database
 
-from Schemas import schemas
+import schemas
 
 from typing import Annotated
 
@@ -84,7 +84,7 @@ async def register(
     # Create user
     db_user = crud.create_user(db=db, user=user)
 
-    access_token = authentication.create_access_token(data={"sub": db_user.email})
+    access_token = middleware.create_access_token(data={"sub": db_user.email})
 
     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
     return {"access_token": access_token, "token_type": "bearer"}
@@ -94,7 +94,7 @@ async def register(
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     # print("Testing ::" + form_data.username)
     # print("Testing ::" + form_data.password)
-    user = authentication.authenticate_user(form_data.username, form_data.password)
+    user = middleware.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
     
@@ -103,27 +103,27 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 @app.post("/login", response_model=schemas.Token)
 async def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
 
-    #user = authentication.userInDB(database.db, form_data.username)
+    #user = middleware.userInDB(database.db, form_data.username)
 
     db_user = crud.get_user_by_email(db, email=form_data.username)
 
     if not db_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
     
-    if not authentication.verify_password(form_data.password, db_user.hashed_password):
+    if not middleware.verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
 
-    access_token = authentication.create_access_token(data={"sub": db_user.email})
+    access_token = middleware.create_access_token(data={"sub": db_user.email})
 
     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me", response_model=schemas.User)
-async def read_users_me(current_user: schemas.User = Depends(authentication.get_current_active_user)):
+async def read_users_me(current_user: schemas.User = Depends(middleware.get_current_active_user)):
     return current_user
 
 @app.get("/users/items")
-async def read_own_items(current_user: schemas.User = Depends(authentication.get_current_active_user)):
+async def read_own_items(current_user: schemas.User = Depends(middleware.get_current_active_user)):
     return [{"item_id": 1, "owner":current_user}]
 
 # @app.post("/users/", response_model=schemas.User)

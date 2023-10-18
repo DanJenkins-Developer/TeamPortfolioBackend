@@ -3,9 +3,9 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 
-from Schemas import schemas
+import schemas
 
-from Database import database
+import database
 
 from fastapi import Depends, FastAPI, HTTPException, status
 
