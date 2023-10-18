@@ -87,9 +87,7 @@ async def register(
 
     access_token = middleware.create_access_token(data={"sub": db_user.email})
 
-    #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
     return {"access_token": access_token, "token_type": "bearer"}
-    #return crud.create_user(db=db, user=user)
 
 # @app.post("/token", response_model=schemas.Token)
 # async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
