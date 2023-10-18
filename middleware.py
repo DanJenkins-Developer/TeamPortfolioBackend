@@ -84,25 +84,25 @@ def create_access_token(data: dict):
 
 #     return encoded_jwt
 
-async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth_2_scheme)):
-    credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
+# async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth_2_scheme)):
+#     credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
 
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise credential_exception
+#     try:
+#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#         email: str = payload.get("sub")
+#         if email is None:
+#             raise credential_exception
         
-        token_data = schemas.TokenData(email=email)
-    except JWTError:
-        raise credential_exception
+#         token_data = schemas.TokenData(email=email)
+#     except JWTError:
+#         raise credential_exception
     
-    #user = get_user(database.db, email=token_data.email)
-    user = crud.get_user_by_email(db, token_data.email)
-    if user is None:
-        raise credential_exception
+#     #user = get_user(database.db, email=token_data.email)
+#     user = crud.get_user_by_email(db, token_data.email)
+#     if user is None:
+#         raise credential_exception
     
-    return user
+#     return user
 
 # async def get_current_active_user(current_user: schemas.UserInDB = Depends(get_current_user)):
 #     if current_user.disabled:
