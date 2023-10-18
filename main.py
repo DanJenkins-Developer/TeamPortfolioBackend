@@ -90,15 +90,15 @@ async def register(
     return {"access_token": access_token, "token_type": "bearer"}
     #return crud.create_user(db=db, user=user)
 
-@app.post("/token", response_model=schemas.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    # print("Testing ::" + form_data.username)
-    # print("Testing ::" + form_data.password)
-    user = middleware.authenticate_user(form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+# @app.post("/token", response_model=schemas.Token)
+# async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+#     # print("Testing ::" + form_data.username)
+#     # print("Testing ::" + form_data.password)
+#     user = middleware.authenticate_user(form_data.username, form_data.password)
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
     
-    return {"access_token": user.access_token, "token_type": "bearer"}
+#     return {"access_token": user.access_token, "token_type": "bearer"}
 
 @app.post("/login", response_model=schemas.Token)
 async def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
@@ -122,9 +122,9 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Sessi
 async def read_users_me(current_user: schemas.User = Depends(middleware.get_current_active_user)):
     return current_user
 
-@app.get("/users/items")
-async def read_own_items(current_user: schemas.User = Depends(middleware.get_current_active_user)):
-    return [{"item_id": 1, "owner":current_user}]
+# @app.get("/users/items")
+# async def read_own_items(current_user: schemas.User = Depends(middleware.get_current_active_user)):
+#     return [{"item_id": 1, "owner":current_user}]
 
 # @app.post("/users/", response_model=schemas.User)
 # def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
