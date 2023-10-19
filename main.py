@@ -91,15 +91,13 @@ async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db
     email = form_data.email
     password = form_data.password
 
-    #db_user = crud.get_user_by_email(db, email=form_data.email)
-
-    auth_user = authentication.authenticate_user(email, password, db)
+    auth_db_user = authentication.authenticate_user(email, password, db)
 
     #access_token = middleware.create_access_token(data={"sub": db_user.email})
 
     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
     #return {"access_token": access_token, "token_type": "bearer"}
-    return auth_user
+    return auth_db_user
 
 @app.get("/users/me", response_model=schemas.UserInDB)
 async def read_users_me(current_user: models.User = Depends(authorize)):
