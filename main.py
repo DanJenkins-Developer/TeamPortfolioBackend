@@ -8,23 +8,6 @@ from sqlalchemy.orm import Session
 from authorization import authorize
 from typing import Annotated
 import crud, models, schemas, middleware, authentication
-#from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-#from passlib.context import CryptContext
-
-
-#import middleware
-
-#from Database import database
-
-#import schemas
-
-
-# from database import SessionLocal
-
-
-
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# oauth_2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 
@@ -43,13 +26,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
 
 @app.post("/register")
 async def register(
@@ -89,15 +65,6 @@ async def register(
 
     return {"access_token": access_token, "token_type": "bearer"}
 
-# @app.post("/token", response_model=schemas.Token)
-# async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-#     # print("Testing ::" + form_data.username)
-#     # print("Testing ::" + form_data.password)
-#     user = middleware.authenticate_user(form_data.username, form_data.password)
-#     if not user:
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
-    
-#     return {"access_token": user.access_token, "token_type": "bearer"}
 
 # @app.post("/login", response_model=schemas.Token)
 # async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
@@ -155,11 +122,4 @@ async def read_users_me(current_user: models.User = Depends(authorize)):
 #     users = crud.get_users(db, skip=skip, limit=limit)
 #     return users
 
-
-# @app.get("/users/{user_id}", response_model=schemas.User)
-# def read_user(user_id: int, db: Session = Depends(get_db)):
-#     db_user = crud.get_user(db, user_id=user_id)
-#     if db_user is None:
-#         raise HTTPException(status_code=404, detail="User not found")
-#     return db_user
 
