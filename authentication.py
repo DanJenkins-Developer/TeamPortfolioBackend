@@ -31,10 +31,10 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def get_user(db, email: str):
-    if email in db:
-        user_data = db[email]
-        return schemas.UserInDB(**user_data)
+# def get_user(db, email: str):
+#     if email in db:
+#         user_data = db[email]
+#         return schemas.UserInDB(**user_data)
         #return schemas.AuthenticatedUser(**user_data)
     
 def authenticate_user(email: str, password: str, db: Session = Depends(get_db)):
