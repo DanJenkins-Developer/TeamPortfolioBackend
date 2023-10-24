@@ -85,11 +85,11 @@ async def register(
 #     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.post("/login", response_model=schemas.AuthenticatedUser)
-async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
+async def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db) ):
 
     #user = middleware.userInDB(database.db, form_data.username)
-    email = form_data.email
-    password = form_data.password
+    # email = form_data.email
+    # password = form_data.password
 
     auth_db_user = authentication.authenticate_user(email, password, db)
 
