@@ -84,7 +84,8 @@ async def register(
 #     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
 #     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/login", response_model=schemas.AuthenticatedUser)
+#@app.post("/login", response_model=schemas.AuthenticatedUser)
+@app.post("/login")
 async def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db) ):
 
     #user = middleware.userInDB(database.db, form_data.username)
@@ -97,7 +98,9 @@ async def login_user(email: str = Form(...), password: str = Form(...), db: Sess
 
     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
     #return {"access_token": access_token, "token_type": "bearer"}
-    return auth_db_user
+    access_token = middleware.create_access_token(data={"sub": auth_db_user.email})
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me", response_model=schemas.UserInDB)
 async def read_users_me(current_user: models.User = Depends(authorize)):
