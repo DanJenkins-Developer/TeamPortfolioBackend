@@ -100,6 +100,7 @@ async def login_user(email: str = Form(...), password: str = Form(...), db: Sess
     #return {"access_token": access_token, "token_type": "bearer"}
     access_token = middleware.create_access_token(data={"sub": auth_db_user.email})
 
+    # test
     return {"access_token": access_token, "token_type": "bearer"}
 
 @app.get("/users/me", response_model=schemas.UserInDB)
