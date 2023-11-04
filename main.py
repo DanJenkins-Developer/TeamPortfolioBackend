@@ -1,16 +1,34 @@
 # uvicorn main:app --reload
 # python3 -m http.server 8080
 
+from s3_bucket import s3_client
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from db_utils import get_db
 from sqlalchemy.orm import Session
 from authorization import authorize
 from typing import Annotated
-import crud, models, schemas, middleware, authentication
+import crud
+import models
+import schemas
+import middleware
+import authentication
+
+import boto3
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
+
+
+# from fastapi.staticfiles import StaticFiles
+# import os
+# import shutil
 
 app = FastAPI()
 
+
+# storage_dir = "storage"
+# os.makedirs(storage_dir, exist_ok=True)
+
+# app.mount("/storage", StaticFiles(directory="storage"), name="storage")
 
 origins = [
     "http://localhost.tiangolo.com",
@@ -26,6 +44,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.post("/register")
 async def register(
@@ -43,18 +62,34 @@ async def register(
     # if so throw an error
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # Collect file name from photo file (temp)
-    photo_name = photo.filename
-    profile_picture_id = photo_name
 
+    try:
+        content = await photo.read()
+        s3_response = s3_client.put_object(
+            Bucket='team-profile-pictures',
+            Key=photo.filename,
+            Body=content
+        )
+        photo_url = f"{'https://accesspoint1-dso6gt5myao37djcz38u3kksnyrbguse2a-s3alias.s3-accesspoint.us-east-2.amazonaws.com'}/{photo.filename}"
+    except NoCredentialsError:
+        raise HTTPException(
+            status_code=500, detail="Credentials not available for AWS S3")
+    except PartialCredentialsError:
+        raise HTTPException(
+            status_code=500, detail="Incomplete credentials for AWS S3")
+    except ClientError as e:
+        raise HTTPException(
+            status_code=500, detail=f"AWS S3 Client Error: {e}")
+
+        # Save photo_url instead of photo_name
+    profile_picture_url = photo_url
     # Construct user schema to pass to crud function
     user = schemas.CreateUser(
         email=email,
         first_name=first_name,
         last_name=last_name,
         phone_number=phone_number,
-        profile_picture_id=profile_picture_id,
+        profile_picture_id=profile_picture_url,
         password=password
     )
 
@@ -63,7 +98,7 @@ async def register(
 
     access_token = middleware.create_access_token(data={"sub": db_user.email})
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "filename": profile_picture_url}
 
 
 # @app.post("/login", response_model=schemas.Token)
@@ -75,7 +110,7 @@ async def register(
 
 #     if not db_user:
 #         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
-    
+
 #     if not middleware.verify_password(form_data.password, db_user.hashed_password):
 #         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
 
@@ -84,24 +119,26 @@ async def register(
 #     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
 #     return {"access_token": access_token, "token_type": "bearer"}
 
-#@app.post("/login", response_model=schemas.AuthenticatedUser)
+# @app.post("/login", response_model=schemas.AuthenticatedUser)
 @app.post("/login")
-async def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db) ):
+async def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
 
-    #user = middleware.userInDB(database.db, form_data.username)
+    # user = middleware.userInDB(database.db, form_data.username)
     # email = form_data.email
     # password = form_data.password
 
     auth_db_user = authentication.authenticate_user(email, password, db)
 
-    #access_token = middleware.create_access_token(data={"sub": db_user.email})
+    # access_token = middleware.create_access_token(data={"sub": db_user.email})
 
-    #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
-    #return {"access_token": access_token, "token_type": "bearer"}
-    access_token = middleware.create_access_token(data={"sub": auth_db_user.email})
+    # return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
+    # return {"access_token": access_token, "token_type": "bearer"}
+    access_token = middleware.create_access_token(
+        data={"sub": auth_db_user.email})
 
     # test
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 @app.get("/users/me", response_model=schemas.UserInDB)
 async def read_users_me(current_user: models.User = Depends(authorize)):
@@ -123,5 +160,3 @@ async def read_users_me(current_user: models.User = Depends(authorize)):
 # def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 #     users = crud.get_users(db, skip=skip, limit=limit)
 #     return users
-
-
