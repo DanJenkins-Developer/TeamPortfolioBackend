@@ -14,21 +14,11 @@ import schemas
 import middleware
 import authentication
 
-import boto3
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
 
 
-# from fastapi.staticfiles import StaticFiles
-# import os
-# import shutil
-
 app = FastAPI()
 
-
-# storage_dir = "storage"
-# os.makedirs(storage_dir, exist_ok=True)
-
-# app.mount("/storage", StaticFiles(directory="storage"), name="storage")
 
 origins = [
     "http://localhost.tiangolo.com",
