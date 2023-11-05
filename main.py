@@ -85,7 +85,9 @@ async def register(
     access_token = middleware.create_access_token(data={"sub": db_user.email})
 
     # Return same info that I would with users.me
-    return {"access_token": access_token, "token_type": "bearer", "filename": profile_picture_url}
+    return {"access_token": access_token,
+            "token_type": "bearer",
+            "profile_picture_link": profile_picture_url}
 
 
 # @app.post("/login", response_model=schemas.Token)
