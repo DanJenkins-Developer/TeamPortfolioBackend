@@ -55,13 +55,7 @@ async def register(
         raise HTTPException(status_code=400, detail="Email already registered")
 
     try:
-        # content = await photo.read()
-        # s3_response = s3_client.put_object(
-        #     Bucket='team-profile-pictures',
-        #     Key=photo.filename,
-        #     Body=content
-        # )
-        # photo_url = f"{'https://accesspoint1-dso6gt5myao37djcz38u3kksnyrbguse2a-s3alias.s3-accesspoint.us-east-2.amazonaws.com'}/{photo.filename}"
+        # Upload profile picture to s3 bucket
         photo_url = await put_profile_picture(photo)
     except NoCredentialsError:
         raise HTTPException(
