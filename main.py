@@ -93,6 +93,9 @@ async def register(
             "phone_number": db_user.phone_number,
             "email": db_user.email}
 
+    # Probably should add some timestamp here for checking
+    # freshness of data on frontend
+
 
 # @app.post("/login", response_model=schemas.Token)
 # async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
