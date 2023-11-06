@@ -87,7 +87,11 @@ async def register(
     # Return same info that I would with users.me
     return {"access_token": access_token,
             "token_type": "bearer",
-            "profile_picture_link": profile_picture_url}
+            "profile_picture_link": profile_picture_url,
+            "first_name": db_user.first_name,
+            "last_name:": db_user.last_name,
+            "phone_number": db_user.phone_number,
+            "email": db_user.email}
 
 
 # @app.post("/login", response_model=schemas.Token)
