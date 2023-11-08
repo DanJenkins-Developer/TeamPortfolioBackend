@@ -22,7 +22,8 @@ async def put_profile_picture(photo: UploadFile):
     )
 
     print(s3_response)
-    photo_url = f"{'https://accesspoint1-dso6gt5myao37djcz38u3kksnyrbguse2a-s3alias.s3-accesspoint.us-east-2.amazonaws.com'}/{unique_filename}"
+    # photo_url = f"{'https://accesspoint1-dso6gt5myao37djcz38u3kksnyrbguse2a-s3alias.s3-accesspoint.us-east-2.amazonaws.com'}/{unique_filename}"
+    photo_url = unique_filename
     # photo_url = f"{'https://accesspoint1-dso6gt5myao37djcz38u3kksnyrbguse2a-s3alias.s3-accesspoint.us-east-2.amazonaws.com'}/{photo.filename}"
 
     return photo_url
