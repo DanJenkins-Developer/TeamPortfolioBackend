@@ -29,6 +29,7 @@ origins = [
 ]
 
 app.add_middleware(
+    # CORS Middleware to allow requests from localhost:8080
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
@@ -39,6 +40,7 @@ app.add_middleware(
 
 @app.post("/register")
 async def register(
+    # Get form data from request
     first_name: Annotated[str, Form()],
     last_name: Annotated[str, Form()],
     phone_number: Annotated[str, Form()],
