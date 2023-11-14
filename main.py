@@ -1,7 +1,7 @@
 # uvicorn main:app --reload
 # python3 -m http.server 8080
 
-from s3_bucket import s3_client
+# from s3_bucket import s3_client
 from fastapi import Depends, FastAPI, HTTPException, status, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from db_utils import get_db
