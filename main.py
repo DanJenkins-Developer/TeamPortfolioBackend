@@ -99,24 +99,6 @@ async def register(
     # freshness of data on frontend
 
 
-# @app.post("/login", response_model=schemas.Token)
-# async def login_user(form_data: schemas.EmailPasswordRequestForm = Depends(), db: Session = Depends(get_db) ):
-
-#     #user = middleware.userInDB(database.db, form_data.username)
-
-#     db_user = crud.get_user_by_email(db, email=form_data.email)
-
-#     if not db_user:
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
-
-#     if not middleware.verify_password(form_data.password, db_user.hashed_password):
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password", headers={"WWW-Authenticate": "Bearer"})
-
-#     access_token = middleware.create_access_token(data={"sub": db_user.email})
-
-#     #return {"User": user.username, "access_token": access_token, "token_type":"bearer"}
-#     return {"access_token": access_token, "token_type": "bearer"}
-
 # @app.post("/login", response_model=schemas.AuthenticatedUser)
 @app.post("/login")
 async def login_user(email: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
