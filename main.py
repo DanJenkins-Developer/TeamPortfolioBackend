@@ -13,6 +13,7 @@ import models
 import schemas
 import middleware
 import authentication
+from pydantic import EmailStr, ValidationError
 
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
 
@@ -44,11 +45,13 @@ async def register(
     first_name: Annotated[str, Form()],
     last_name: Annotated[str, Form()],
     phone_number: Annotated[str, Form()],
-    email: Annotated[str, Form()],
+    # email: Annotated[str, Form()],
+    email: Annotated[EmailStr, Form()],
     password: Annotated[str, Form()],
     photo: Annotated[UploadFile, File()],
     db: Session = Depends(get_db)
 ):
+
     # check if user exists
     db_user = crud.get_user_by_email(db, email=email)
 
