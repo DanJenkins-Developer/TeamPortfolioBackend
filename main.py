@@ -120,7 +120,15 @@ async def login_user(email: str = Form(...), password: str = Form(...), db: Sess
         data={"sub": auth_db_user.email})
 
     # test
-    return {"access_token": access_token, "token_type": "bearer"}
+    # return {"access_token": access_token, "token_type": "bearer"}
+
+    # Return same info that I would with users.me
+    return {"access_token": access_token,
+            "token_type": "bearer",
+            "profile_picture_link": auth_db_user.profile_picture_id,
+            "first_name": auth_db_user.first_name,
+            "last_name": auth_db_user.last_name,
+            "phone_number": auth_db_user.phone_number}
 
 
 @app.get("/users/me", response_model=schemas.UserInDB)
