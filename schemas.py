@@ -35,6 +35,15 @@ class CreateUser(User):
     password: str
 
 
+class ReturnUser(User):
+    first_name: str
+    last_name: str
+    phone_number: str
+    profile_picture_link: str or None = None
+    access_token: str or None = None
+    access_token_type: str or None = None
+
+
 class AuthenticatedUser(User):
     # hashed_password: str
     access_token: str or None = None
