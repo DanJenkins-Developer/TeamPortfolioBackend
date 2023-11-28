@@ -15,6 +15,7 @@ import middleware
 import authentication
 from pydantic import EmailStr, ValidationError
 import stripe
+from starlette.responses import RedirectResponse
 
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
 
@@ -29,6 +30,7 @@ load_dotenv()
 
 # SET STRIPE API KEY
 stripe.api_key = os.getenv("STRIPE_TEST_SECRET_KEY")
+YOUR_DOMAIN = os.getenv("API_URL")
 
 app = FastAPI()
 
@@ -182,6 +184,28 @@ async def connection_token():
     except Exception as e:
         # Handle exceptions (e.g., from Stripe API) and return a suitable error response
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get('/create-checkout-session')
+async def create_checkout_session():
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    # Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+                    'price': 'price_1OHWwrBJJOeDqi7auCOahOfp',
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=YOUR_DOMAIN + '/success.html',
+            cancel_url=YOUR_DOMAIN + '/cancel.html',
+        )
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+     # Redirect the client to the checkout session URL
+    return RedirectResponse(url=checkout_session.url, status_code=303)
 
 # @app.get("/users/items")
 # async def read_own_items(current_user: schemas.User = Depends(middleware.get_current_active_user)):
