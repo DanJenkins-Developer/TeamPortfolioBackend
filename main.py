@@ -14,6 +14,7 @@ import schemas
 import middleware
 import authentication
 from pydantic import EmailStr, ValidationError
+import stripe
 
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
 
@@ -134,6 +135,7 @@ async def login_user(email: str = Form(...), password: str = Form(...), db: Sess
 @app.get("/users/me", response_model=schemas.UserInDB)
 async def read_users_me(current_user: models.User = Depends(authorize)):
     return current_user
+
 
 # @app.get("/users/items")
 # async def read_own_items(current_user: schemas.User = Depends(middleware.get_current_active_user)):
