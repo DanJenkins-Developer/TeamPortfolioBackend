@@ -20,6 +20,16 @@ from botocore.exceptions import NoCredentialsError, PartialCredentialsError, Cli
 
 from s3_bucket_utils import put_profile_picture
 
+
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
+# SET STRIPE API KEY
+stripe.api_key = os.getenv("STRIPE_TEST_SECRET_KEY")
+
 app = FastAPI()
 
 
@@ -162,6 +172,16 @@ async def process_payment(amount: int, currency: str, token: str):
         # Handle generic Stripe errors
         return {"status": "error", "message": "Something went wrong. Please try again later."}
 
+
+@app.post('/connection-token')
+async def connection_token():
+    try:
+        connection_token = stripe.terminal.ConnectionToken.create()
+        # If you want to return only the secret part
+        return {"secret": connection_token.secret}
+    except Exception as e:
+        # Handle exceptions (e.g., from Stripe API) and return a suitable error response
+        raise HTTPException(status_code=400, detail=str(e))
 
 # @app.get("/users/items")
 # async def read_own_items(current_user: schemas.User = Depends(middleware.get_current_active_user)):
