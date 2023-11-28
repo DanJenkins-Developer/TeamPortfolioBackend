@@ -30,7 +30,7 @@ load_dotenv()
 
 # SET STRIPE API KEY
 stripe.api_key = os.getenv("STRIPE_TEST_SECRET_KEY")
-YOUR_DOMAIN = os.getenv("API_URL")
+YOUR_DOMAIN = os.getenv("FRONTEND_URL")
 
 app = FastAPI()
 
@@ -186,7 +186,7 @@ async def connection_token():
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get('/create-checkout-session')
+@app.post('/create-checkout-session')
 async def create_checkout_session():
     try:
         checkout_session = stripe.checkout.Session.create(
