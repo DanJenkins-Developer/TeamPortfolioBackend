@@ -208,6 +208,15 @@ async def create_checkout_session():
      # Redirect the client to the checkout session URL
     return RedirectResponse(url=checkout_session.url, status_code=303)
 
+
+if __name__ == "__main__":
+    # Retrieve the port number from the environment variable set by Render
+    # or default to 8000 if it's not set.
+    port = int(os.environ.get('PORT', 8000))
+    # Start Uvicorn with `host` set to '0.0.0.0' to bind to all interfaces
+    # and `port` set to the retrieved port.
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
 # @app.get("/users/items")
 # async def read_own_items(current_user: schemas.User = Depends(middleware.get_current_active_user)):
 #     return [{"item_id": 1, "owner":current_user}]
