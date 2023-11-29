@@ -74,6 +74,19 @@ async def register(
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+     # Check if the uploaded file is an image
+    if not photo.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Invalid file type")
+
+    # Check if the file size is too large
+    MAX_SIZE = 2 * 1024 * 1024  # 2MB
+    contents = await photo.read()
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=413, detail="File too large")
+
+    # Reset file pointer after reading
+    photo.file.seek(0)
+
     try:
         # Upload profile picture to s3 bucket
         photo_url = await put_profile_picture(photo)
