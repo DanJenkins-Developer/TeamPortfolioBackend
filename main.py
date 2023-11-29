@@ -16,6 +16,7 @@ import authentication
 from pydantic import EmailStr, ValidationError
 import stripe
 from starlette.responses import RedirectResponse
+import uvicorn
 
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
 
