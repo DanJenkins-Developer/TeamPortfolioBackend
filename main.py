@@ -41,6 +41,7 @@ origins = [
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:8080",
+    "https://team-portfolio-480.onrender.com"
 ]
 
 app.add_middleware(
